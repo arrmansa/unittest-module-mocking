@@ -5,11 +5,13 @@ from unittest.mock import MagicMock
 def mock_imports(module_names):
     original_import = builtins.__import__
     def _import(name, *args, **kwargs):
-        if name not in sys.modules:
-            if any(map(name.startswith, module_names)):
-                print("Import mocked", name)
+        if any(map(name.startswith, module_names)):
+            print("Import mocked", name)
+            if name not in sys.modules:
                 sys.modules[name] = MagicMock()
-        return original_import(name, *args, **kwargs)
+            return sys.modules[name]
+        else:
+            return original_import(name, *args, **kwargs)
     builtins.__import__ = _import
     return original_import
     
